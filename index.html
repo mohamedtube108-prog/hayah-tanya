@@ -1,0 +1,363 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#11111b">
+<title>حياة تانية 🎮</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+ --bg:#101019;--card:#1b1b29;--line:#303044;
+ --purple:#9985ff;--green:#65e6a5;--gold:#ffd477;
+ --text:#f5f3ff;--muted:#aaa8c0;
+}
+body{
+ margin:0;background:radial-gradient(ellipse at top,#292044,#101019 50%);
+ color:var(--text);font-family:system-ui,Tahoma,Arial,sans-serif;
+ min-height:100vh
+}
+button{font:inherit;cursor:pointer}
+.app{max-width:850px;margin:auto;padding:18px 13px 100px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:11px}
+.logo{background:linear-gradient(135deg,#b5a4ff,#6954dc);padding:12px;border-radius:15px;font-size:24px}
+h1{font-size:23px;margin:0}
+.subtitle{font-size:12px;color:var(--muted);margin-top:4px}
+button{border:0}
+.reset{background:#292838;color:white;border:1px solid var(--line);padding:10px;border-radius:12px}
+.hero{
+ background:linear-gradient(130deg,#332853,#211d32);
+ border:1px solid #514477;border-radius:23px;padding:22px;margin-bottom:14px
+}
+.eyebrow{color:#c9bdff;font-size:12px}
+h2{font-size:30px;line-height:1.4;margin:8px 0}
+.hero p{color:#c5c1d8;font-size:14px;line-height:1.8;margin:0 0 17px}
+.primary{background:linear-gradient(135deg,#a494ff,#725ce0);color:white;padding:12px 16px;border-radius:12px;font-weight:bold}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:14px}
+.stat,.panel{background:var(--card);border:1px solid var(--line);border-radius:17px;padding:15px}
+.stat-label{color:var(--muted);font-size:12px}
+.stat-value{font-size:23px;font-weight:800;margin:7px 0}
+.green{color:var(--green)}.gold{color:var(--gold)}.purple{color:#c4b8ff}
+.panel{margin-bottom:14px}
+.panel h3{font-size:16px;margin:0 0 14px}
+.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.action{
+ text-align:right;background:#222232;color:var(--text);
+ border:1px solid #36354c;border-radius:15px;padding:13px;min-height:125px
+}
+.action:active{transform:scale(.98)}
+.action:hover{border-color:var(--purple)}
+.emoji{font-size:25px;display:block;margin-bottom:10px}
+.action b{display:block;font-size:14px;margin-bottom:5px}
+.action small{color:var(--muted);font-size:11px;line-height:1.7}
+.progress{height:9px;background:#363448;border-radius:20px;overflow:hidden;margin:12px 0}
+.progress div{height:100%;width:0;background:linear-gradient(90deg,#7561df,#c0adff);transition:width .2s}
+.between{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.task,.event{
+ background:#222232;border:1px solid #36354c;border-radius:13px;
+ padding:12px;margin-top:9px;display:flex;align-items:center;gap:10px
+}
+.task-info{flex:1;min-width:0}
+.task-info b{font-size:13px;display:block}
+.task-info small{font-size:11px;color:var(--muted);display:block;margin-top:4px}
+.claim{background:#493c72;color:white;padding:9px;border-radius:9px;font-size:11px}
+.claim:disabled{background:#263b34;color:#9de8c2}
+.feed{display:grid;gap:10px}
+.feed-item{display:flex;gap:10px;align-items:flex-start}
+.feed-icon{background:#302a49;border-radius:11px;padding:9px}
+.feed-item b{font-size:13px}
+.feed-item p{font-size:12px;color:var(--muted);line-height:1.7;margin:4px 0}
+.note{font-size:12px;color:var(--muted);line-height:1.8}
+footer{text-align:center;color:#77758c;font-size:11px;margin-top:20px}
+nav{
+ position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;
+ background:#151520f5;border-top:1px solid var(--line);
+ padding:9px 4px calc(9px + env(safe-area-inset-bottom));z-index:5
+}
+nav button{background:transparent;color:var(--muted);padding:7px 13px;border-radius:11px;font-size:11px}
+nav button span{display:block;font-size:19px;margin-bottom:3px}
+nav button.active{background:#332c50;color:#d6ccff}
+#toast{
+ position:fixed;bottom:85px;left:50%;transform:translateX(-50%);
+ background:#302b45;border:1px solid #5a4c82;border-radius:12px;
+ padding:12px 17px;max-width:90%;text-align:center;font-size:13px;
+ opacity:0;pointer-events:none;transition:.2s;z-index:10
+}
+#toast.show{opacity:1}
+@media(min-width:650px){
+ .stats{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+<header>
+ <div class="brand">
+  <div class="logo">✦</div>
+  <div><h1>حياة تانية</h1><div class="subtitle">إنت بطل الحكاية</div></div>
+ </div>
+ <button class="reset" id="reset">↻ إعادة</button>
+</header>
+
+<section class="hero">
+ <div class="eyebrow">● فصل جديد من حياتك</div>
+ <h2>مستقبلك بيبدأ من <span class="purple">قرارك.</span></h2>
+ <p>اشتغل، اتعلم، افتح مشروعك، واجمع ثروتك. كل خطوة بتاخدها بتقرّبك من حياة أحسن داخل اللعبة.</p>
+ <button class="primary" id="newDay">🌅 ابدأ يوم جديد</button>
+</section>
+
+<section class="stats">
+ <div class="stat"><div class="stat-label">💰 رصيدك</div><div class="stat-value green" id="money">٥٬٠٠٠ ج.م</div><div class="stat-label">فلوس افتراضية</div></div>
+ <div class="stat"><div class="stat-label">⭐ المستوى</div><div class="stat-value purple" id="level">١</div><div class="stat-label" id="xpText">٠ خبرة</div></div>
+ <div class="stat"><div class="stat-label">⚡ الطاقة</div><div class="stat-value gold" id="energy">١٠٠٪</div><div class="stat-label">طاقتك الحالية</div></div>
+ <div class="stat"><div class="stat-label">📅 الأيام</div><div class="stat-value" id="day">١</div><div class="stat-label">أيام لعبك</div></div>
+</section>
+
+<section class="panel">
+ <h3>🎮 اختار خطوتك الجاية</h3>
+ <div class="actions">
+  <button class="action" onclick="act('work')"><span class="emoji">💼</span><b>اشتغل شغلانة</b><small>اكسب فلوس وخبرة من شغلك.</small></button>
+  <button class="action" onclick="act('learn')"><span class="emoji">📚</span><b>طوّر مهاراتك</b><small>اتعلم عشان تزود دخلك.</small></button>
+  <button class="action" onclick="act('business')"><span class="emoji">🏪</span><b>المشروع الخاص</b><small>افتح مشروع وحقق أرباح.</small></button>
+  <button class="action" onclick="act('rest')"><span class="emoji">🛌</span><b>استريح</b><small>استرجع طاقتك بعد التعب.</small></button>
+  <button class="action" onclick="act('shop')"><span class="emoji">🛍️</span><b>المتجر</b><small>اشتري ترقيات ومستلزمات.</small></button>
+  <button class="action" onclick="act('chance')"><span class="emoji">🎲</span><b>فرصة عشوائية</b><small>جرب حظك واكتشف حدث جديد.</small></button>
+ </div>
+</section>
+
+<section class="panel">
+ <h3>📈 مستوى تقدمك</h3>
+ <div class="between"><span id="levelLabel">المستوى ١</span><span id="xpPercent">٠٪</span></div>
+ <div class="progress"><div id="xpBar"></div></div>
+ <div class="between"><span id="xpLeft">١٠٠ نقطة للمستوى التالي</span><span>⭐</span></div>
+</section>
+
+<section class="panel">
+ <h3>🎯 مهامك ومكافآتك</h3>
+ <div id="tasks"></div>
+</section>
+
+<section class="panel">
+ <h3>📜 سجل الحكاية</h3>
+ <div class="feed" id="feed"></div>
+</section>
+
+<footer>حياة تانية — لعبة محاكاة خيالية للتسلية.<br>كل الأموال والأحداث داخل اللعبة افتراضية.</footer>
+</div>
+
+<nav>
+ <button class="active" onclick="go('top',this)"><span>⌂</span>الرئيسية</button>
+ <button onclick="go('actions',this)"><span>💼</span>الشغل</button>
+ <button onclick="go('tasks',this)"><span>🎯</span>المهام</button>
+ <button onclick="go('feed',this)"><span>📜</span>الحكاية</button>
+</nav>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const initial={
+ money:5000,xp:0,level:1,energy:100,day:1,skill:0,
+ business:false,businessLevel:0,workCount:0,learnCount:0,
+ claimed:[],laptop:false,
+ feed:[{icon:"🌅",title:"بداية الحكاية",text:"وصلت مدينة جديدة ومعاك ٥٬٠٠٠ جنيه افتراضي. مستقبلك لسه بيتكتب."}]
+};
+
+let s;
+try{
+ s=JSON.parse(localStorage.getItem("hayahTanya"))||structuredClone(initial);
+}catch(e){s=JSON.parse(JSON.stringify(initial));}
+
+const $=id=>document.getElementById(id);
+const num=n=>Math.floor(n).toLocaleString("ar-EG");
+
+function save(){
+ try{localStorage.setItem("hayahTanya",JSON.stringify(s));}catch(e){}
+}
+let toastTimer;
+function toast(msg){
+ $("toast").textContent=msg;
+ $("toast").classList.add("show");
+ clearTimeout(toastTimer);
+ toastTimer=setTimeout(()=>$("toast").classList.remove("show"),2300);
+}
+function log(icon,title,text){
+ s.feed.unshift({icon,title,text});
+ s.feed=s.feed.slice(0,6);
+}
+function xp(n){
+ s.xp+=n;
+ while(s.xp>=s.level*100){
+  s.xp-=s.level*100;
+  s.level++;
+  s.money+=500;
+  log("⭐","ترقية مستوى","وصلت للمستوى "+num(s.level)+" وخدت مكافأة ٥٠٠ جنيه.");
+  toast("مبروك! وصلت للمستوى "+num(s.level));
+ }
+}
+function energy(n){
+ if(s.energy<n){toast("طاقتك مش كفاية. استريح أو ابدأ يوم جديد.");return false;}
+ s.energy-=n;
+ return true;
+}
+
+function act(type){
+ if(type==="work"){
+  if(!energy(25))return;
+  let pay=450+s.skill*100+(s.laptop?150:0);
+  s.money+=pay;s.xp+=25;s.workCount++;
+  log("💼","يوم شغل ناجح","اشتغلت وكسبت "+num(pay)+" جنيه.");
+  toast("كسبت "+num(pay)+" جنيه!");
+ }
+ else if(type==="learn"){
+  if(s.money<150){toast("محتاج ١٥٠ جنيه للتعلم.");return;}
+  if(!energy(20))return;
+  s.money-=150;s.skill++;s.learnCount++;s.xp+=35;
+  log("📚","مهارة جديدة","طورت مهاراتك وبقيت في مستوى مهارة "+num(s.skill)+".");
+  toast("مهاراتك زادت! أجرك هيعلى.");
+ }
+ else if(type==="business"){
+  if(!s.business){
+   if(s.money<2500){toast("محتاج ٢٬٥٠٠ جنيه لفتح مشروع.");return;}
+   s.money-=2500;s.business=true;s.businessLevel=1;s.xp+=35;
+   log("🏪","مشروعك الأول","فتحت مشروع مشروبات صغير.");
+   toast("مبروك! مشروعك بقى شغال.");
+  }else{
+   if(!energy(15))return;
+   const revenue=500+s.businessLevel*220+Math.floor(Math.random()*180);
+   s.money+=revenue;s.xp+=20;
+   log("📦","أرباح المشروع","مشروعك حقق "+num(revenue)+" جنيه.");
+   toast("مشروعك كسب "+num(revenue)+" جنيه.");
+  }
+ }
+ else if(type==="rest"){
+  const amount=Math.min(45,100-s.energy);
+  if(amount<=0){toast("طاقتك كاملة بالفعل.");return;}
+  s.energy+=amount;
+  log("🛌","استراحة","استرجعت "+num(amount)+"٪ من طاقتك.");
+  toast("استرجعت "+num(amount)+"٪ من طاقتك.");
+ }
+ else if(type==="shop"){
+  const choice=prompt("المتجر:\nاكتب 1 لشراء لابتوب بـ١٢٠٠ جنيه يزيد مكسب الشغل.\nاكتب 2 لشراء وجبة بـ١٠٠ جنيه تسترجع ٣٠ طاقة.");
+  if(choice==="1"){
+   if(s.laptop){toast("عندك لابتوب بالفعل.");return;}
+   if(s.money<1200){toast("رصيدك مش كفاية.");return;}
+   s.money-=1200;s.laptop=true;
+   log("💻","ترقية جديدة","اشتريت لابتوب يزود دخلك من الشغل.");
+   toast("اشتريت لابتوب!");
+  }else if(choice==="2"){
+   if(s.money<100){toast("رصيدك مش كفاية.");return;}
+   s.money-=100;s.energy=Math.min(100,s.energy+30);
+   log("🍲","وجبة","استرجعت ٣٠ نقطة طاقة.");
+   toast("طاقتك زادت!");
+  }else return;
+ }
+ else if(type==="chance"){
+  if(!energy(10))return;
+  const r=Math.random();
+  if(r<.45){
+   const amount=300+Math.floor(Math.random()*501);
+   s.money+=amount;s.xp+=10;
+   log("🎁","فرصة حلوة","كسبت "+num(amount)+" جنيه من شغل جانبي.");
+   toast("حظك حلو! كسبت "+num(amount)+" جنيه.");
+  }else if(r<.7){
+   const amount=Math.min(s.money,150+Math.floor(Math.random()*251));
+   s.money-=amount;
+   log("🧾","مصاريف مفاجئة","دفعت "+num(amount)+" جنيه مصاريف.");
+   toast("ظهر مصروف مفاجئ.");
+  }else{
+   s.energy=Math.min(100,s.energy+15);s.xp+=15;
+   log("🤝","فرصة جديدة","اتعرفت على شخص قدم لك نصيحة مفيدة.");
+   toast("كسبت خبرة وطاقة!");
+  }
+ }
+ xp(0);
+ render();save();
+}
+
+function newDay(){
+ s.day++;
+ s.energy=100;
+ if(s.business){
+  s.money=Math.max(0,s.money-100);
+  log("🏪","مصاريف المشروع","اتخصم ١٠٠ جنيه مصاريف تشغيل.");
+ }
+ log("🌅","اليوم "+num(s.day),"طاقتك اتجدّدت بالكامل. ابدأ يومك!");
+ toast("يوم جديد! طاقتك رجعت كاملة.");
+ render();save();
+}
+
+const taskData=[
+ {id:"work",name:"أول يوم شغل",desc:"اشتغل شغلانة واحدة",reward:250,done:()=>s.workCount>=1},
+ {id:"learn",name:"التعلم أول الطريق",desc:"اتعلم مهارة جديدة",reward:200,done:()=>s.learnCount>=1},
+ {id:"save",name:"ابني رصيدك",desc:"وصل رصيدك إلى ٥٥٠٠ جنيه",reward:300,done:()=>s.money>=5500},
+ {id:"business",name:"رائد أعمال",desc:"افتح مشروعك الأول",reward:500,done:()=>s.business}
+];
+
+function claim(id){
+ const t=taskData.find(x=>x.id===id);
+ if(!t||s.claimed.includes(id)||!t.done())return;
+ s.claimed.push(id);s.money+=t.reward;xp(20);
+ log("🎯","مهمة مكتملة","استلمت مكافأة "+num(t.reward)+" جنيه.");
+ toast("استلمت مكافأة المهمة!");
+ render();save();
+}
+
+function render(){
+ $("money").textContent=num(s.money)+" ج.م";
+ $("level").textContent=num(s.level);
+ $("energy").textContent=num(s.energy)+"٪";
+ $("day").textContent=num(s.day);
+ $("xpText").textContent=num(s.xp)+" خبرة";
+ const needed=s.level*100;
+ const pct=Math.min(100,Math.round(s.xp/needed*100));
+ $("levelLabel").textContent="المستوى "+num(s.level);
+ $("xpPercent").textContent=num(pct)+"٪";
+ $("xpBar").style.width=pct+"%";
+ $("xpLeft").textContent=num(needed-s.xp)+" نقطة للمستوى التالي";
+
+ $("tasks").innerHTML=taskData.map(t=>{
+  const done=t.done(),claimed=s.claimed.includes(t.id);
+  return `<div class="task">
+   <div style="font-size:21px">${claimed?"✅":"🎯"}</div>
+   <div class="task-info"><b>${t.name}</b>
+   <small>${t.desc} · ${num(t.reward)} جنيه</small></div>
+   <button class="claim" onclick="claim('${t.id}')" ${!done||claimed?"disabled":""}>
+   ${claimed?"تم":done?"استلم":"لسه"}</button>
+  </div>`;
+ }).join("");
+
+ $("feed").innerHTML=s.feed.map(f=>`
+  <div class="feed-item"><div class="feed-icon">${f.icon}</div>
+  <div><b>${f.title}</b><p>${f.text}</p></div></div>`).join("");
+}
+
+function go(section,button){
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ button.classList.add("active");
+ let target=section==="top"?document.body:
+ section==="actions"?document.querySelector(".actions"):
+ section==="tasks"?$("tasks"):$("feed");
+ target.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+$("newDay").onclick=newDay;
+$("reset").onclick=()=>{
+ if(confirm("متأكد إنك عايز تبدأ من جديد؟ هيتحذف تقدمك الحالي.")){
+  s=JSON.parse(JSON.stringify(initial));save();render();
+  toast("بدأت حكاية جديدة!");
+ }
+};
+
+// توافق مع الحفظ لو فتحت نسخة قديمة من اللعبة
+s.level=s.level||1;s.skill=s.skill||0;s.claimed=s.claimed||[];
+s.feed=s.feed||[];s.workCount=s.workCount||0;s.learnCount=s.learnCount||0;
+s.energy=s.energy??100;s.day=s.day||1;s.business=!!s.business;
+s.laptop=!!s.laptop;
+render();save();
+</script>
+</body>
+</html>
